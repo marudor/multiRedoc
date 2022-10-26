@@ -1,5 +1,5 @@
 # Stage 1
-FROM node:15.11.0-alpine as react-build
+FROM node:18-alpine as react-build
 WORKDIR /app
 COPY ./app/ .
 RUN npm install
@@ -7,8 +7,8 @@ RUN npm run-script build
 
 # Stage 2 - the production environment
 FROM nginx:alpine
-LABEL name "redoc"
-LABEL maintainer "volbrene"
+LABEL name "multi-redoc"
+LABEL maintainer "marudor"
 
 ENV URLS="[{url: 'https://petstore.swagger.io/v2/swagger.json', name: 'Petshop'},{url: 'https://api.apis.guru/v2/specs/instagram.com/1.0.0/swagger.yaml', name: 'Instagram'}]"
 ENV BASE_NAME=""
