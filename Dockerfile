@@ -1,9 +1,10 @@
 # Stage 1
-FROM node:18-alpine as react-build
+FROM node:20-alpine as react-build
 WORKDIR /app
 COPY ./app/ .
-RUN npm install
-RUN npm run-script build
+RUN corepack enable
+RUN pnpm install --frozen-lockfile
+RUN pnpm build
 
 # Stage 2 - the production environment
 FROM nginx:alpine

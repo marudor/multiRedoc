@@ -1,74 +1,62 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './RedocPage.css';
 import Logo from '../logo.png';
 import { RedocStandalone } from 'redoc';
-import slugify from 'slugify';
-import { Link } from 'react-router-dom';
-import SelectApi from '../SelectApi/SelectApi';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import SelectApi, { useAvailableApis } from '../SelectApi/SelectApi';
 
-class RedocPage extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      availableApis: window._env_.URLS.map((item) => ({
-        value: slugify(item.name).toLowerCase(),
-        label: item.name,
-        url: item.url,
-      })),
-      activeApi: {
-        url: '',
-      },
-    };
-
-    const activeApiFromQuery = this.state.availableApis.find(
-      (element) => element.value === this.props.match.params.api
+const RedocPage = () => {
+  const availableApis = useAvailableApis();
+  const params = useParams();
+  const [activeApi, setActiveApi] = useState({ url: '' });
+  const navigate = useNavigate();
+  useEffect(() => {
+    const activeApiFromQuery = availableApis.find(
+      (element) => element.value === params.api,
     );
 
     if (activeApiFromQuery) {
-      this.state.activeApi = activeApiFromQuery;
+      setActiveApi(activeApiFromQuery);
     } else {
-      this.props.history.push('/');
+      navigate('/');
     }
-  }
+  }, [availableApis, params, navigate]);
 
-  handleChange = (selectedApi) => {
-    this.setState({
-      activeApi: selectedApi,
-    });
+  const handleChange = useCallback(
+    (selectedApi) => {
+      setActiveApi(selectedApi);
+      navigate(selectedApi.value);
+    },
+    [navigate],
+  );
 
-    this.props.history.push(selectedApi.value);
-  };
+  return (
+    <div>
+      <header className="RedocPage-header">
+        <Link to={'/'}>
+          <img src={Logo} alt="Redoc" />
+        </Link>
 
-  render() {
-    return (
-      <div>
-        <header className="RedocPage-header">
-          <Link to={'/'}>
-            <img src={Logo} alt="Redoc" />
-          </Link>
-
-          <SelectApi
-            className="select"
-            value={this.state.activeApi}
-            onChange={this.handleChange}
-          />
-        </header>
-        <section className="container__redoc">
-          <RedocStandalone
-            specUrl={this.state.activeApi.url}
-            options={{
-              nativeScrollbars: true,
-              scrollYOffset: 60,
-              theme: {
-                colors: { primary: { main: window._env_.THEME_COLOR } },
-              },
-            }}
-          />
-        </section>
-      </div>
-    );
-  }
-}
+        <SelectApi
+          className="select"
+          value={activeApi}
+          onChange={handleChange}
+        />
+      </header>
+      <section className="container__redoc">
+        <RedocStandalone
+          specUrl={activeApi.url}
+          options={{
+            nativeScrollbars: true,
+            scrollYOffset: 60,
+            theme: {
+              colors: { primary: { main: window._env_.THEME_COLOR } },
+            },
+          }}
+        />
+      </section>
+    </div>
+  );
+};
 
 export default RedocPage;

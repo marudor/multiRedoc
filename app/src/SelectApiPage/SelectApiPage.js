@@ -1,25 +1,28 @@
-import React, { Component } from 'react';
+import React, { useCallback } from 'react';
 import './SelectApiPage.css';
 import Logo from '../logo.png';
 import SelectApi from '../SelectApi/SelectApi';
+import { useNavigate } from 'react-router-dom';
 
-class SelectApiPage extends Component {
-  handleChange = (selectedApi) => {
-    this.props.history.push(selectedApi.value);
-  };
+const SelectApiPage = () => {
+  const navigate = useNavigate();
+  const handleChange = useCallback(
+    (selectedApi) => {
+      navigate(selectedApi.value);
+    },
+    [navigate],
+  );
 
-  render() {
-    return (
-      <div>
-        <div className="search-wrapper">
-          <div>
-            <img src={Logo} alt="Redoc" />
-            <SelectApi autoFocus="true" onChange={this.handleChange} />
-          </div>
+  return (
+    <div>
+      <div className="search-wrapper">
+        <div>
+          <img src={Logo} alt="Redoc" />
+          <SelectApi autoFocus="true" onChange={handleChange} />
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default SelectApiPage;

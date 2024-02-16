@@ -1,19 +1,22 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.css';
-import { Route, BrowserRouter as Router } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
 import RedocPage from './RedocPage/RedocPage';
 import SelectApiPage from './SelectApiPage/SelectApiPage';
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root'));
+
+root.render(
   <Router basename={window._env_.BASE_NAME}>
     <div>
-      <Route exact path="/" component={SelectApiPage} />
-      <Route path="/:api" component={RedocPage} />
+      <Routes>
+        <Route exact path="/" Component={SelectApiPage} />
+        <Route path="/:api" Component={RedocPage} />
+      </Routes>
     </div>
   </Router>,
-  document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change
