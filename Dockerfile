@@ -1,5 +1,5 @@
 # Stage 1
-FROM node:20-alpine as react-build
+FROM node:22-alpine AS react-build
 WORKDIR /app
 COPY ./app/ .
 RUN corepack enable
@@ -8,8 +8,8 @@ RUN pnpm build
 
 # Stage 2 - the production environment
 FROM nginx:alpine
-LABEL name "multi-redoc"
-LABEL maintainer "marudor"
+LABEL name="multi-redoc"
+LABEL maintainer="marudor"
 
 ENV URLS="[{url: 'https://petstore.swagger.io/v2/swagger.json', name: 'Petshop'},{url: 'https://api.apis.guru/v2/specs/instagram.com/1.0.0/swagger.yaml', name: 'Instagram'}]"
 ENV BASE_NAME=""
@@ -18,7 +18,7 @@ ENV PAGE_TITLE="Redoc"
 
 WORKDIR /var/www/html
 
-COPY --from=react-build /app/build /var/www/html
+COPY --from=react-build /app/dist /var/www/html
 COPY ./docker/run.sh /
 COPY ./docker/default.conf /etc/nginx/conf.d
 
